@@ -2,6 +2,7 @@ from Library import *
 from SQL import *
 Closed = False
 class Manger:
+
     def window_settings(window):
         window.geometry('1230x700+0+0')
         window.iconbitmap(f'{getcwd()}\\ICON.ico')
@@ -89,13 +90,12 @@ class Manger:
         Address_Entry.place(x=27,y=450)
         Id_del.place(x=100,y=500)
     def show():
-        pass
-        '''cursor.execute('select * from data;')
+        cursor.execute('select * from data;')
         ViewData.delete(*ViewData.get_children())
         for i in cursor:
-            ViewData.insert("",END,values=i)'''
+            ViewData.insert("",END,values=i)
     def commands_mysql(show = show):
-        pass
+        
         er = False
         if len(Name_Entry.get()) < 1:
             messagebox.showerror('Sorry','Sorry, but you have to fill in the Name field to complete the process')
@@ -133,11 +133,13 @@ class Manger:
             er = True
         elif len(Functional_class.get()) < 1:
             messagebox.showerror('sorry','Please Check Recruitment field to complete the process')
-        cursor.execute('select * from data;')
-        for data in cursor:
-            if Email_Entry.get() in data or Mobile_Entry.get() in data:
-                messagebox.showerror('خطاء في ادخال المعلومات','Sorry, but we have identical information in the system and in the fields. Please check the number field and the email field and try again.')
-                er = True
+        info = cursor.execute('select * from data;').fetchall()
+        try:
+            for data in info:
+                if Email_Entry.get() in data or Mobile_Entry.get() in data:
+                    messagebox.showerror('خطاء في ادخال المعلومات','Sorry, but we have identical information in the system and in the fields. Please check the number field and the email field and try again.')
+                    er = True
+        except:er=False
         try:
             Address = f'{Address_Entry.get(1.0,"end-1c").splitlines()[0]} {Address_Entry.get(1.0,"end-1c").splitlines()[1]}'
         except IndexError:
@@ -145,17 +147,17 @@ class Manger:
             er = True
         if er == False:
             big_number = 0
-            #cursor.execute('select * from data')
-            #for i in cursor:
-            #    if int(i[0]) >= big_number:
-            #        big_number = int(i[0])+1
+            c = cursor.execute('select * from data').fetchall()
+            for i in c:
+               if int(i[0]) >= big_number:
+                   big_number = int(i[0])+1
             time = f"{Recruitment.get().split('/')[0]}/{Recruitment.get().split('/')[1]}/{Recruitment.get().split('/')[2]}"
             values = int(big_number),Name_Entry.get(),int(Age_Entry.get()),Job_Entry.get(),Email_Entry.get(),Gender_Entry.get(),Address,float(Functional_class.get()),Recruitment.get(),int(Mobile_Entry.get())
             #print(values)
             #id name age job email gender address Fc recruitment pn
-            #cursor.execute("INSERT INTO data (id,name,age,job,email,gender,address,Fc,recruitment,pn) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",values)
+            cursor.execute("INSERT INTO data (id,name,age,job,email,gender,address,Fc,recruitment,pn) VALUES(?,?,?,?,?,?,?,?,?,?)",values)
             #                                  1 2     3   4    5      6      7     8     9       10         1   2  3 4   5 6  7   8   9
-            #connect.commit()''
+            connect.commit()
             show()
     def clear_entrys(show=show):
         Name_Entry.delete(0,END)
@@ -170,7 +172,7 @@ class Manger:
     def update_window(treeview=treeviwe,show=show):
         update = Tk()
         update.geometry('300x300+100+100')
-        #update.resizable(False,False)
+        update.resizable(False,False)
         update.title('Delete Window')
         update.config(background='#525C68')
         hello = Label(update,text='Hello',bg='#525C68',fg='black',font=('bold',25))
